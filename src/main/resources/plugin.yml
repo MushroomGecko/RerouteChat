@@ -1,0 +1,6 @@
+name: RerouteChat
+version: '${project.version}'
+main: me.mushroomgecko.reroutechat.RerouteChat
+api-version: 1.19
+authors: [ MushroomGecko ]
+description: Makes all player chat be executed by the server so it is unable to be highlighted and reported
