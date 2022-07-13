@@ -17,3 +17,5 @@ In Progress
 > /teammsg and /tm message rerouting
 
 > /me command rerouting
+
+> @a support for /tell, /msg, and /w messages
