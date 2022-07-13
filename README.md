@@ -10,3 +10,10 @@ Current Features
 > Standard server chat is rerouted as a server announcement
 
 > /tell, /msg, and /w messages are rerouted as server announcements
+
+In Progress
+> /say command rerouting
+
+> /teammsg and /tm message rerouting
+
+> /me command rerouting
