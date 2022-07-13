@@ -8,4 +8,5 @@ If you encounter any errors or have any suggestions on how to improve this proje
 
 Current Features
 > Standard server chat is rerouted as a server announcement
+
 > /tell, /msg, and /w messages are rerouted as server announcements
