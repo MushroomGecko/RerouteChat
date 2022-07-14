@@ -7,6 +7,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scoreboard.Team;
+
 
 public final class RerouteChat extends JavaPlugin implements Listener {
 
@@ -44,15 +46,15 @@ public final class RerouteChat extends JavaPlugin implements Listener {
         // Split up the command
         String[] breakMessage = message.split(" ");
 
-        // Check if a valid message is being sent
-        if(breakMessage.length > 2)
+        // Check if it is the tell command
+        if(breakMessage[0].equalsIgnoreCase("/tell") || breakMessage[0].equalsIgnoreCase("/msg") || breakMessage[0].equalsIgnoreCase("/w"))
         {
-            // Check if it is the tell command
-            if(breakMessage[0].equalsIgnoreCase("/tell") || breakMessage[0].equalsIgnoreCase("/msg") || breakMessage[0].equalsIgnoreCase("/w"))
-            {
-                // Cancels the player's original message being sent
-                playerMessage.setCancelled(true);
+            // Cancels the player's original message being sent
+            playerMessage.setCancelled(true);
 
+            // Check if a valid message is being sent
+            if(breakMessage.length > 2)
+            {
                 // Gets info about the sender
                 Player sender = playerMessage.getPlayer();
 
@@ -79,6 +81,55 @@ public final class RerouteChat extends JavaPlugin implements Listener {
                     // Send an error message if the receiver is not found
                     sender.sendMessage("Player " + receiver + " not found.");
                 }
+            }
+            else if(breakMessage.length == 2)
+            {
+                // Tells player that their message to another player can't be blank
+                playerMessage.getPlayer().sendMessage("Message to player can't be blank.");
+            }
+            else
+            {
+                // Tells player that they need to specify what player they want to send a message to
+                playerMessage.getPlayer().sendMessage("Please specify a player you wish to send a message to.");
+            }
+        }
+        else if(breakMessage[0].equalsIgnoreCase("/teammsg") || breakMessage[0].equalsIgnoreCase("/tm"))
+        {
+            // Cancels the player's original message being sent
+            playerMessage.setCancelled(true);
+
+            if(breakMessage.length > 1)
+            {
+                // Gets info about the sender
+                Player sender = playerMessage.getPlayer();
+
+                // Gets the team the player is in
+                Team team = sender.getScoreboard().getEntryTeam(sender.getName());
+
+                // Check to see if player is in a team
+                if(team != null)
+                {
+                    // Send every member of the team a message
+                    for (String player : team.getEntries())
+                    {
+                        Player receiver = getServer().getPlayerExact(player);
+                        if (receiver != null)
+                        {
+                            String output = "->" + "[" + team.getDisplayName() + "] " + "<" + sender.getName() + "> " + message.substring(message.indexOf(" ")+1);
+                            receiver.sendMessage(output);
+                        }
+                    }
+                }
+                else
+                {
+                    // Tells the player that they are not in a team, so they can't send a message
+                    sender.sendMessage("Can't send team message. You are not in a team.");
+                }
+            }
+            else
+            {
+                // Tells the player that their message can't be blank
+                playerMessage.getPlayer().sendMessage("Message to team can't be blank.");
             }
         }
     }
