@@ -6,6 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Team;
 
@@ -13,12 +14,23 @@ import org.bukkit.scoreboard.Team;
 public final class RerouteChat extends JavaPlugin implements Listener {
 
     @Override
-    public void onEnable() {
+    public void onEnable()
+    {
         // Plugin startup logic
         System.out.println("RerouteChat is running");
 
         // Register the events
         getServer().getPluginManager().registerEvents(this, this);
+    }
+
+    @EventHandler
+    public void onKick(PlayerKickEvent kickReason)
+    {
+        //Microsoft likes to kick people without any signed messages
+        if(kickReason.getReason().equals("Received chat packet with missing or invalid signature."))
+        {
+            kickReason.setCancelled(true);
+        }
     }
 
     @EventHandler
@@ -36,10 +48,11 @@ public final class RerouteChat extends JavaPlugin implements Listener {
 
         // Reroutes the player's original message to be said by the server instead of the player
         Bukkit.broadcastMessage(output);
+
     }
 
     @EventHandler
-    public void onTell(PlayerCommandPreprocessEvent playerMessage)
+    public void onCommand(PlayerCommandPreprocessEvent playerMessage)
     {
         // Get the command the player sends
         String message = playerMessage.getMessage();
@@ -74,6 +87,16 @@ public final class RerouteChat extends JavaPlugin implements Listener {
 
                     // Reroutes the player's original message to be said by the server instead of the player
                     recipient.sendMessage(receiverOutput);
+                    sender.sendMessage(senderOutput);
+                }
+                else if(receiver.equals("@a"))
+                {
+                    // Sets up the output of the message originally being sent
+                    String receiverOutput = sender.getName() + " whispers to you: " + sendMessage;
+                    String senderOutput = "You whisper to everyone: " + sendMessage;
+
+                    // Reroutes the player's original message to be said by the server instead of the player
+                    Bukkit.broadcastMessage(receiverOutput);
                     sender.sendMessage(senderOutput);
                 }
                 else
@@ -115,6 +138,7 @@ public final class RerouteChat extends JavaPlugin implements Listener {
                         Player receiver = getServer().getPlayerExact(player);
                         if (receiver != null)
                         {
+                            // Make a substring of the message to send to the team
                             String output = "->" + "[" + team.getDisplayName() + "] " + "<" + sender.getName() + "> " + message.substring(message.indexOf(" ")+1);
                             receiver.sendMessage(output);
                         }
@@ -132,11 +156,53 @@ public final class RerouteChat extends JavaPlugin implements Listener {
                 playerMessage.getPlayer().sendMessage("Message to team can't be blank.");
             }
         }
+        else if(breakMessage[0].equalsIgnoreCase("/say"))
+        {
+            // Cancels the player's original message being sent
+            playerMessage.setCancelled(true);
+
+            if(breakMessage.length > 1)
+            {
+                // Gets info about the sender
+                Player sender = playerMessage.getPlayer();
+                // Make a substring of the message to send to the server
+                String output = "[" + sender.getName() + "] " + message.substring(message.indexOf(" ")+1);
+
+                // Reroutes the player's original message to be said by the server instead of the player
+                Bukkit.broadcastMessage(output);
+            }
+            else
+            {
+                // Tells the player that their message can't be blank
+                playerMessage.getPlayer().sendMessage("Message can't be blank.");
+            }
+        }
+        else if(breakMessage[0].equalsIgnoreCase("/me"))
+        {
+            // Cancels the player's original message being sent
+            playerMessage.setCancelled(true);
+
+            if(breakMessage.length > 1)
+            {
+                // Gets info about the sender
+                Player sender = playerMessage.getPlayer();
+                // Make a substring of the message to send to the server
+                String output = "* " + sender.getName() + " " + message.substring(message.indexOf(" ")+1);
+
+                // Reroutes the player's original message to be said by the server instead of the player
+                Bukkit.broadcastMessage(output);
+            }
+            else
+            {
+                // Tells the player that their message can't be blank
+                playerMessage.getPlayer().sendMessage("Message can't be blank.");
+            }
+        }
     }
 
-
     @Override
-    public void onDisable() {
+    public void onDisable()
+    {
         // Plugin shutdown logic
         System.out.println("RerouteChat has stopped");
     }
