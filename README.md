@@ -23,4 +23,6 @@ In Progress
 > @p support for /tell, /msg, and /w messages
 
 Known Bugs
-> After sending a regular chat message than executing a command then attempting to send a regular chat again will kick you for "Chat message valdation failure".
+
+Fixed Bugs
+> After sending a regular chat message than executing a command then attempting to send a regular chat again will kick you for "Chat message valdation failure". This was fixed in 1.19.2
