@@ -17,10 +17,12 @@ Current Features
 
 > /me command rerouting
 
-In Progress
+Planned Features
 > @r support for /tell, /msg, and /w messages
 
 > @p support for /tell, /msg, and /w messages
+
+> Plugin scheduling so interference with other chat plugins is minimal
 
 Known Bugs
 
